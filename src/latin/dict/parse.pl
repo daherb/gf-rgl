@@ -220,7 +220,7 @@ while (my $l = <>) {
     	    if ($gender eq "C")
     	    {
     		$absname = $wfs[0]."_F_N" ;
-    		$abslines{$absname} = $cat ;
+    		$abslines{$absname} = "$cat ; -- $comment" ;
     		$conclines{$absname} = "    $absname = mkN \"".$wfs[0]."\" \"".$wfs[1]."\" feminine ; -- $comment\n" ;
     		$absname = $wfs[0]."_M_N" ;
     		$conclines{$absname} = "    $absname = mkN \"".$wfs[0]."\" \"".$wfs[1]."\" masculine ; -- $comment\n" ;
@@ -267,7 +267,7 @@ while (my $l = <>) {
     	    if ($gender eq "C")
     	    {
     		$absname = $wfs[0]."_F_N" ;
-    		$abslines{$absname} = $cat ;
+    		$abslines{$absname} = "$cat ; -- $comment"  ;
     		$conclines{$absname} = "    $absname = mkN \"".$wfs[0]."\" \"".$wfs[1]."\" feminine ; -- $comment\n" ;
     		$absname = $wfs[0]."_M_N" ;
     		$conclines{$absname} = "    $absname = mkN \"".$wfs[0]."\" \"".$wfs[1]."\" masculine ; -- $comment\n" ;
@@ -504,13 +504,13 @@ while (my $l = <>) {
     }
     if ($cat ne "") {
     	# print $absfh "    ".$wfs[0]."_".$cat." : $cat ;\n" ;
-    	$abslines{$absname} = $cat;
+    	$abslines{$absname} = "$cat ;" ;
     }
 }
 
 foreach my $k (sort (keys %abslines))
 {
-    print $absfh "    $k : ".$abslines{$k}." ;\n" ;
+    print $absfh "    $k : ".$abslines{$k}."\n" ;
 }
 
 foreach my $k (sort (keys %conclines))
