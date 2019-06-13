@@ -1,63 +1,48 @@
-import PGF
-import System.Environment
-import System.Exit
-import System.IO
-import Control.Monad
-usage =
-  do
-    progName <- getProgName
-    putStrLn $ "Usage: " ++ progName ++ " <grammarFile> <lang> <inputFile>"
-    putStrLn $ "  grammarFile: A GF pgf compiled grammar file"
-    putStrLn $ "  language: One of the languages in the pgf file"
-    putStrLn $ "  inputFile: A text document to be morphologically analyzed"
+module Morpho where
 
-type MorphoAnalysis = [(String,[(String,String)])]
+data Person = P1 | P2 | P3
+  deriving (Show,Read) ;
+data Gender = Fem | Masc | Neut
+  deriving (Show,Read) ;
+data Case = Nom | Gen | Dat | Acc | Abl | Voc
+  deriving (Show,Read);
+data Number = Sg | Pl
+  deriving (Show,Read);
+data Voice = Active | Passive | Deponens
+  deriving (Show,Read) ;
+data POS = ADJ | ADV | CONJ | INTJ | N | NUM | PN | PREP| PRO| V | PART
+  deriving (Show,Read) ;
+data Tense = Pres| FutureI | FutureII | Future | Imperf | Perf | Pqperf
+  deriving (Show,Read) ;
+data Degree = Positive | Comparative | Superlative
+  deriving (Show,Read) ;
+data Mood = Ind | Subj
+  deriving (Show,Read);
+data NumberType = Card | Ord | Dist | Dig
+  deriving (Show,Read) ;
+data PronounType = Dem | Indef | Pers | Poss | Quest | Refl | Rel | Adj
+  deriving (Show,Read) ;
+data VerbType = SupinI | SupinII | Gerund | Gerundivum | Inf | Imp | Part
+  deriving (Show,Read) ;
+data  Wordform = Cap | UC | I2j | Alt
+  deriving (Show,Read) ;
+data Feat = Person Person
+  | Gender Gender
+  | Case Case
+  | Number Number
+  | Voice Voice
+  | POS POS
+  | Tense Tense
+  | Degree Degree
+  | Mood Mood
+  | NumberType NumberType
+  | PronounType PronounType
+  | VerbType VerbType
+  | Wordform Wordform
+  deriving (Show,Read) ;
 
-showMA :: MorphoAnalysis -> IO ()
-showMA ((voc,ls):rest) =
-  do
-    putStrLn $ voc ++ "\t" ++ (show ls)
-    showMA rest
-showMA [] = return ()
+data Analysis = Analysis String [Lemma] deriving (Show,Read) ;
+data Lemma = Lemma String [Feat] deriving (Show,Read) ;
 
-    
-analyze :: PGF -> Language -> FilePath -> IO MorphoAnalysis
-analyze pgf language input =
-  do
-    let char = ' ':['a'..'z']++['A'..'Z']
-    vocab <- withFile input ReadMode $ \handle -> do
-      content <- hGetContents handle
-      hPutStrLn stderr content
-      return $! words $! concat $! map (\c -> if elem c char then [c] else [' ']) content
-    let morphoDict = buildMorpho pgf language
---    let morphoAs = map (\v -> (v,lookupMorpho morphoDict v)) vocab
-    
-    return $! map (\(v,ls) -> (v, map (\(l,a) -> (show l, a)) ls )) $! map (\v -> (v,lookupMorpho morphoDict v)) vocab
-    --return []
-    
-main =
-  do
-    args <- getArgs
-    if length args < 3 then
-        do
-          usage
-          exitFailure
-      else
-        do
-         let grammarFile = head args
-         let language = (head . tail) args
-         
-         let inFile = (head . tail . tail) args
-         pgf <- (readPGF grammarFile)
-         let langs = languages pgf
-         if not $ elem language (map show langs) then
-           do
-             putStrLn "Language not in grammar file, got:\n"
-             msum $ map (\s -> putStrLn $ "\t" ++ (show s) ++ "\n") langs
-             exitFailure
-           else
-           do
-             analysis <- analyze pgf (mkCId language) inFile
-             --putStrLn $ show analysis
-             showMA analysis
-         return ()
+-- show $ Analysis "abdiderant" [Lemma "abdere" [POS V, Mood Ind, Tense Pqperf, Voice Active, Person P3]]
+
